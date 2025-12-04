@@ -13,13 +13,13 @@
 
   <h1>Цикл for</h1>
   <?php
-   echo '<pre>';
-
-   for ($i = 1; $i < 50; $i += 2) {
-       echo $i, ' ';
-   }
-
-   echo '</pre>';
+    for ($i = 1; $i <= 50; $i++) 
+    {
+		if ($i % 2 !== 0) 
+        {
+			echo $i . "<br>";
+		}
+	}
   ?>
 
  </body>
