@@ -1,15 +1,27 @@
 <?php
 $currentPage = $_SERVER['REQUEST_URI'];
 
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
+if (isset($_COOKIE[session_name()])) {
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    if (!isset($_SESSION['visited_pages'])) {
+        $_SESSION['visited_pages'] = []; 
+    }
+    $pages = &$_SESSION['visited_pages'];
+} else {
+    $fingerprint = md5($_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']);
+    $storageFile = __DIR__ . '/sess_' . $fingerprint;
+    
+    $pages = file_exists($storageFile) ? json_decode(file_get_contents($storageFile), true) : [];
 }
 
-if (!isset($_SESSION['visited_pages'])) {
-    $_SESSION['visited_pages'] = []; 
-}
+if (empty($pages) || end($pages) !== $currentPage) {
+    $pages[] = $currentPage;
 
-if (empty($_SESSION['visited_pages']) || end($_SESSION['visited_pages']) !== $currentPage) {
-    $_SESSION['visited_pages'][] = $currentPage;
+    if (!isset($_COOKIE[session_name()])) {
+        file_put_contents($storageFile, json_encode($pages));
+    }
 }
 ?>
